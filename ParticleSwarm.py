@@ -54,35 +54,47 @@ def apply_velocity(route, velocity):
 def generate_random_velocity(num_cities):
     return [tuple(random.sample(range(num_cities), 2))]
 
-# Update velocity based on the current position, pBest, and gBest
+import random
+
 def update_velocity(current_velocity, current_position, pBest_position, gBest_position, num_cities):
     new_velocity = []
-
-    # Approach pBest by making only one swap operation
-    for i in range(num_cities - 1, -1, -1):
-        if current_position[i] != pBest_position[i]:
-            j = current_position.index(pBest_position[i])
-            new_velocity.append((i, j))
-            break  # Stop after performing only one swap
-
-    # Approach gBest by making only one swap operation
-    for i in range(num_cities):
-        if current_position[i] != gBest_position[i]:
-            j = current_position.index(gBest_position[i])
-            new_velocity.append((i, j))
-            break  # Stop after performing only one swap
+    temp_position = current_position.copy()  # Create a copy to modify without affecting the original
 
     # Add random velocity to diversify the search space
-    num_random_swaps = random.randint(1, 3)  # Add 1 to 3 random swaps
+    num_random_swaps = random.randint(0, 3)  # Add 1 to 3 random swaps
     for _ in range(num_random_swaps):
         i = random.randint(0, num_cities - 2)  # Choose a random index (not the last)
         j = i + 1  # Swap with the next index
-        new_velocity.append((i, j))
+        r = (i, j)
+        new_velocity.append(r)
+        # Apply the random swap on the temp_position
+        temp_position[i], temp_position[j] = temp_position[j], temp_position[i]
+
+    # Approach pBest by making only one swap operation on temp_position
+    for i in range(num_cities - 1, -1, -1):
+        if temp_position[i] != pBest_position[i]:
+            j = temp_position.index(pBest_position[i])
+            g = (i, j)
+            new_velocity.append(g)
+            # Apply the pBest swap on temp_position
+            temp_position[i], temp_position[j] = temp_position[j], temp_position[i]
+            break  # Stop after performing only one swap
+
+    # Approach gBest by making only one swap operation on temp_position
+    for i in range(num_cities):
+        if temp_position[i] != gBest_position[i]:
+            j = temp_position.index(gBest_position[i])
+            p = (i, j)
+            new_velocity.append(p)
+            # Apply the gBest swap on temp_position
+            temp_position[i], temp_position[j] = temp_position[j], temp_position[i]
+            break  # Stop after performing only one swap
 
     return new_velocity
 
+
 # PSO (Particle Swarm Optimization) algorithm
-def main(cityMatrix, num_particles=8, num_iterations=10):
+def main(cityMatrix, num_particles=8, num_iterations=100):
     num_cities = len(cityMatrix)
 
     # Initialize particles and their velocities

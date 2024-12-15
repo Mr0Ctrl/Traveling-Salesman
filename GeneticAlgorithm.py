@@ -34,7 +34,7 @@ displayMatrix(cityMatrix)
 def main():
     gLength = len(cityMatrix)  # Number of cities
     popSize = 8  # Population size (must be a multiple of 4)
-    iterCount = 10  # Number of iterations
+    iterCount = 100  # Number of iterations
 
     bestFit = []  # Store best fitness values per iteration
     worstFit = []  # Store worst fitness values per iteration
