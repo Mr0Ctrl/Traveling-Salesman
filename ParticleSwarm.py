@@ -3,17 +3,20 @@ import time
 import matplotlib.pyplot as plt
 
 random.seed(42)
-
-cityList = ["A", "B", "C", "D", "E", "F"]
+cityList = ["A", "B", "C", "D", "E", "F","G","H","I","J"]
 # Read the city distance matrix from a file or define it here
 cityMatrix = [
-#   A   B   C   D   E   F   
-   [0,  29, 20, 21, 16, 31],  # A
-   [29, 0,  15, 17, 28, 23],  # B
-   [20, 15, 0,  30, 26, 40],  # C  
-   [21, 17, 30, 0,  23, 27],  # D
-   [16, 28, 26, 23, 0,  19],  # E
-   [31, 23, 40, 27, 19, 0],   # F
+#   A    B   C   D   E   F   G   H   I   J
+    [0,  29, 20, 21, 16, 31, 57, 66, 82, 42],  # A
+    [29, 0,  15, 17, 28, 23, 74, 51, 55, 38],  # B
+    [20, 15, 0,  30, 26, 40, 59, 52, 72, 49],  # C
+    [21, 17, 30, 0,  23, 27, 78, 64, 45, 88],  # D
+    [16, 28, 26, 23, 0,  19, 67, 70, 84, 56],  # E
+    [31, 23, 40, 27, 19, 0,  68, 79, 61, 36],  # F
+    [57, 74, 59, 78, 67, 68, 0, 45, 62, 82],  # G
+    [66, 51, 52, 64, 70, 79, 45, 0, 49, 37],  # H
+    [82, 55, 72, 45, 84, 61, 62, 49, 0, 73],  # I
+    [42, 38, 49, 88, 56, 36, 82, 37, 73, 0]   # J
 ]
 
 # Function to display the city distance matrix
@@ -54,19 +57,28 @@ def generate_random_velocity(num_cities):
 # Update velocity based on the current position, pBest, and gBest
 def update_velocity(current_velocity, current_position, pBest_position, gBest_position, num_cities):
     new_velocity = []
-    # Approach pBest by making only one swap operation a b c d /0-2/ c b a d
-    for i in range(num_cities-1,-1,-1):
+
+    # Approach pBest by making only one swap operation
+    for i in range(num_cities - 1, -1, -1):
         if current_position[i] != pBest_position[i]:
             j = current_position.index(pBest_position[i])
             new_velocity.append((i, j))
             break  # Stop after performing only one swap
 
-    # Approach gBest by making only one swap operation a b c d /1-2/ a c b d // c a b d //
+    # Approach gBest by making only one swap operation
     for i in range(num_cities):
         if current_position[i] != gBest_position[i]:
             j = current_position.index(gBest_position[i])
             new_velocity.append((i, j))
             break  # Stop after performing only one swap
+
+    # Add random velocity to diversify the search space
+    num_random_swaps = random.randint(1, 3)  # Add 1 to 3 random swaps
+    for _ in range(num_random_swaps):
+        i = random.randint(0, num_cities - 2)  # Choose a random index (not the last)
+        j = i + 1  # Swap with the next index
+        new_velocity.append((i, j))
+
     return new_velocity
 
 # PSO (Particle Swarm Optimization) algorithm
